@@ -23,6 +23,7 @@ func (a appDurationMiddleware) Do(ctx context.Context, number int) (int, error) 
 	defer func() {
 		duration := time.Since(start)
 
+		// ВОТ ТУТ OK ВСЕГДА = FALSE И В УСЛОВИЕ НИКОГДА НЕ ПОПАДËТ
 		service1Duration, ok := ctx.Value(external.Service1QueryDurationContextKey).(time.Time)
 		if ok && service1Duration.Second() > 1 {
 			// если был запрос во внешний сервис, который длился больше 1 секунды, то "слишком долго" не логируем

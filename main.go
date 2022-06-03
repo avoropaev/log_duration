@@ -3,23 +3,15 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
-
 	"github.com/avoropaev/log_duration/external"
 )
 
 func main() {
-	app := NewAppMiddleware(
-		NewApp(
-			external.NewClientDurationMiddleware(external.NewService1Client()),
-		),
-	)
+	app := NewApp(external.DurationMiddleware(external.NewClient()))
 
-	ctx := context.Background()
-
-	result, err := app.Do(ctx, 123)
+	result, err := app.Do(context.Background(), 123)
 	if err != nil {
-		log.Fatalln(err)
+		panic(err)
 	}
 
 	fmt.Println(result)

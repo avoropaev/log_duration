@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"time"
-
+	"errors"
+	"fmt"
 	"github.com/avoropaev/log_duration/external"
 )
 
@@ -12,17 +12,20 @@ type App interface {
 }
 
 type app struct {
-	service1 external.Service1Client
+	svc external.Client
 }
 
-func NewApp(service1 external.Service1Client) App {
-	return app{
-		service1: service1,
-	}
+func NewApp(svc external.Client) App {
+	return app{svc}
 }
 
 func (a app) Do(ctx context.Context, number int) (int, error) {
-	time.Sleep(time.Millisecond * 2001)
-
-	return a.service1.GetSomething(ctx, number)
+	resp, err := a.svc.GetSomething(ctx, number)
+	if err != nil {
+		if errors.Is(err, external.ErrDeadline) {
+			fmt.Println("slow request")
+			err = nil
+		}
+	}
+	return resp, err
 }
